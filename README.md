@@ -27,6 +27,17 @@ Install the project dependencies using npm:
 npm install
 ```
 
+Create a config.json file in the project root directory with the following format:
+
+```json
+{
+    "clientId": "<YOUR_SPOTIFY_ID>",
+    "clientSecret": "<YOUR_SPOTIFY_SECRET>"
+}
+```
+
+You can obtain your Spotify API credentials by following the instructions in the [Spotify Developer Documentation](https://developer.spotify.com/documentation/web-api).
+
 ## Usage
 
 After successfully installing the dependencies, you can start the CoverGuess server by running the following command:  
