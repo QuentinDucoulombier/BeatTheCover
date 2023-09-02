@@ -1,4 +1,4 @@
-// Fonction pour ajouter la suggestion à l'input en cliquant sur une suggestion
+// Function to add a suggestion to the input by clicking on a suggestion
 function addSuggestion(inputId, suggestion) {
   const input = document.getElementById(inputId);
   input.value = suggestion;
@@ -30,31 +30,28 @@ function incrementeCpt() {
 async function congratulation() {
   Swal.fire({
     icon: 'success',
-    title: 'Félicitations !',
-    text: 'Vous avez trouvé le bon résultat.',
+    title: 'Congratulations!',
+    text: 'You have found the correct result.',
     confirmButtonColor: '#1db954'
   });
   await sleep(1000);
   reset()
 }
 
-
 async function gameOver() {
   return new Promise((resolve) => {
     Swal.fire({
       icon: 'error',
-      title: 'Échec',
-      text: 'Vous avez dépassé le nombre d\'essais',
+      title: 'Failure',
+      text: 'You have exceeded the number of attempts',
       confirmButtonColor: '#1db954',
       confirmButtonText: 'OK',
     }).then((result) => {
       if (result.isConfirmed) {    
-        resolve(); // Résoudre la promesse lorsque l'utilisateur clique sur "OK"
+        resolve(); // Resolve the promise when the user clicks "OK"
       }
     });
   }).then(() => {
-    reset(); // Appel à la fonction reset après la résolution de la promesse
+    reset(); // Call the reset function after resolving the promise
   });
 }
-
-          

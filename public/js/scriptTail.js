@@ -1,11 +1,10 @@
-/*  Script des suggestions  */
+/* Suggestions Script */
 const suggestions = document.getElementById('suggestions');
 const artInput = document.getElementById('artist-search');
 const trackInput = document.getElementById('track-search');
 const genreInput = document.getElementById('genre-search');
 
-function suggest(input)
-{
+function suggest(input) {
   const suggestionElements = document.querySelectorAll('.suggestion');
   suggestionElements.forEach(suggestionElement => {
     suggestionElement.addEventListener('click', function() {
@@ -16,13 +15,12 @@ function suggest(input)
 }
 
 artInput.addEventListener('input', async function() {
-  const response = await fetch(`/searchArtiste?q=${this.value}`);
+  const response = await fetch(`/searchArtist?q=${this.value}`);
   const data = await response.json();
 
   suggestions.innerHTML = data.map(artist => `<div class="suggestion" data-value="${artist.name}">${artist.name}</div>`).join('');
-  
+
   suggest(artInput);
-  
 });
 
 trackInput.addEventListener('input', async function() {
@@ -42,13 +40,13 @@ genreInput.addEventListener('input', async function() {
 
   suggest(genreInput);
 });
+
 let cpt = 0;
 if (localStorage.getItem('cpt') != null) { 
   cpt = parseInt(localStorage.getItem('cpt')); 
-} 
+}
 
-
-/*script pour bloquer l'audio*/
+/* Script to block audio */
 let maxTime = 0;
 switch (cpt) {
   case 0:
@@ -69,7 +67,6 @@ switch (cpt) {
     maxTime = 50;
     break;
 }
-
 
 const audioElement = document.getElementById('myAudio');
 

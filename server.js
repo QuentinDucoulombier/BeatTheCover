@@ -1,35 +1,35 @@
-/* Import des bibliothèques nécessaires */
+/* Import necessary libraries */
 const express = require('express');
 const axios = require('axios');
 const fs = require('fs');
 
-/* Initialisation de l'application Express */
+/* Initialize the Express application */
 const app = express();
 
-/* Définition de l'emplacement des fichiers statiques (css, images, etc.) */
+/* Define the location of static files (css, images, etc.) */
 app.use(express.static(__dirname + '/public'));
 
-/* Configuration pour traiter les données envoyées par le client */
+/* Configuration to handle data sent by the client */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* Configuration du moteur de rendu des vues */
+/* Configuration of the view rendering engine */
 app.set('view engine', 'ejs');
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
-/* Identification client pour l'accès à l'API Spotify */
+/* Client identification for accessing the Spotify API */
 const clientId = config.clientId;
 const clientSecret = config.clientSecret;
 
-/* Récupération du jeton d'accès à l'API */
+/* Retrieve the access token for the API */
 let accessToken;
 
 async function getAccessToken() {
-  /* Encodage des identifiants client */
+  /* Encode client credentials */
   const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
   
-  /* Tentative de récupération du jeton d'accès */
+  /* Attempt to retrieve the access token */
   try {
     const response = await axios({
       url: 'https://accounts.spotify.com/api/token',
@@ -41,34 +41,34 @@ async function getAccessToken() {
       data: 'grant_type=client_credentials',
     });
   
-    /* Renvoi du jeton d'accès */
+    /* Return the access token */
     return response.data.access_token;
   } catch (error) {
-    /* En cas d'erreur, affichage de l'erreur dans la console */
+    /* In case of an error, display the error in the console */
     console.error(error);
     return error;
   }
 }
 
-/* Récupération du jeton d'accès */
+/* Retrieve the access token */
 getAccessToken().then(token => {
   accessToken = token;
 });
 
-/* ID de la playlist à parcourir */
-//le caca de noé: 4YMz7Vl9H9vPvU1lJe0G2v
+/* ID of the playlist to traverse */
+// Noah's poop: 4YMz7Vl9H9vPvU1lJe0G2v
 let playlistId = '37i9dQZF1DX7iB3RCnBnN4';
 
-/* Variables pour stocker les informations sur les morceaux */
-let nombreMorceaux = 0;
-let cpt = 0;
-let resultat = [];
+/* Variables to store information about the tracks */
+let numberOfTracks = 0;
+let count = 0;
+let result = [];
 let bool = true;
-/*On defini les variables ici car on les reutilise dans plusieurs appels*/
-let nomArtiste;
-let nomAlbum
+/* Define variables here because they are reused in multiple calls */
+let artistName;
+let albumName;
 let cover;
-let nomTrack;
+let trackName;
 let preview;
 let genres;
 let boolResults = true;
@@ -76,8 +76,8 @@ let results = [];
 
 app.get('/', async (req, res) => {
   try{
-    /*---------- Etape 1: On charge l'ensemble des morceaux de la playlist dans un tableau ---------*/
-    /*Dans un premier temps on enregistre le nombre de morceaux de la playlist*/
+    /*---------- Step 1: Load all the tracks from the playlist into an array ---------*/
+    /*First, record the number of tracks in the playlist*/
     axios.get(`https://api.spotify.com/v1/playlists/${playlistId}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
@@ -88,77 +88,77 @@ app.get('/', async (req, res) => {
 
         const playlist = response.data;
         const totalTracks = playlist.tracks.total;
-        console.log(`La playlist contient ${totalTracks} morceaux.`);
-        /*Puis on stocke les morceaux dans le tableau resultat*/
-        /*L'ensemble des manipulations sont notamment du au fait que l'api de spotify permet d'envoyer max 100 morceaux a la fois
-        Pour cela on incremente l'offset a 0 à nombre total de morceaux - 100*/
-        //On cree une variable temp que l'on va decrementer
+        console.log(`The playlist contains ${totalTracks} tracks.`);
+        /*Then store the tracks in the result array*/
+        /*All these manipulations are mainly due to the fact that the Spotify API allows sending a maximum of 100 tracks at a time
+        To do this, we increment the offset from 0 to the total number of tracks - 100 */
+        //Create a temporary variable to decrement
         let totalTracksTemp = totalTracks;
-        //On prends en compte que l'offset commence a 0 et non a 100
+        //Take into account that the offset starts at 0 and not 100
         let totalTracksWhile = totalTracks - 100;
-        //On verifie que le nombre de morceaux traités (offset en cours) est inferieux au nombre de morceaux - 100
-        while ((nombreMorceaux <= totalTracksWhile) && (bool)) {
-          //On appel l'api spotify pour avoir les 100 morceaux a partir de l'offset
-          const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?offset=${nombreMorceaux}`, {
+        //Check if the number of processed tracks (current offset) is less than the number of tracks - 100
+        while ((numberOfTracks <= totalTracksWhile) && (bool)) {
+          //Call the Spotify API to get the 100 tracks starting from the offset
+          const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?offset=${numberOfTracks}`, {
             headers: {
               'Authorization': `Bearer ${accessToken}`
             }
           });
-          //On stock le resultat
+          //Store the result
           const playlist = response.data;
-          /*Dans notre cas on s'interesse uniquement au morceaux avec une preview hors tous les morceaux spotify n'ont pas cette preview
-          Pour cela on parcours tous les morceaux et s'il ont une preview alors on stock le morceaux dans resultat*/
+          /*In our case, we are only interested in tracks with a preview, but not all Spotify tracks have this preview
+          So, we loop through all the tracks, and if they have a preview, we store the track in the result array*/
           for (let i = 0; i < 100; i++) {
-            const titre = playlist['items'][i]['track'];
-            const verifPreview = titre['preview_url'];
-            //On verifie qu'il y a bien une preview
-            if (verifPreview != null) {
-              resultat.push(titre);
+            const track = playlist['items'][i]['track'];
+            const verifyPreview = track['preview_url'];
+            //Check if there is a preview
+            if (verifyPreview != null) {
+              result.push(track);
             }
           }
-          console.log("totalTrackTemp = "+totalTracksTemp);
-          console.log("nombreMorceaux = "+nombreMorceaux);
-          /*Alors la c'est un peu technique*/
-          /*En gros tant que il reste encore plus de 100 morceaux a traités on va dans le else
-          Dans le else: 
-            - on incremente le nombre de morceaux traités de 100
-            - on decremente le nombre de morceaux restant de 100
-          S'il y a moins de 100 morceaux: 
-            - On verifie qu'il reste moins de 100 morceaux
-            - Et on rajoute sur le nombre de morceaux traités le reste (le mod de 100 du coup)*/
+          console.log("totalTracksTemp = "+totalTracksTemp);
+          console.log("numberOfTracks = "+numberOfTracks);
+          /*Now this is a bit technical*/
+          /*Basically, as long as there are still more than 100 tracks to be processed, we go into the 'else' part
+          In the 'else' part:
+            - we increment the number of processed tracks by 100
+            - we decrement the remaining number of tracks by 100
+          If there are less than 100 tracks left:
+            - We check if there are fewer than 100 tracks left
+            - And we add the remainder (the modulo 100) to the number of processed tracks*/
           if (((totalTracksTemp / 100)-1 < 1) && ((totalTracksTemp / 100)-1 > 0)) {
-            nombreMorceaux += totalTracks % 100;
+            numberOfTracks += totalTracks % 100;
           } else {
-            nombreMorceaux += 100;
+            numberOfTracks += 100;
             totalTracksTemp -= 100;
           }
         }
       }
       
-      /*On passe le bool a false car il faut traités tous ce qu'une seule fois*/
+      /*Set bool to false because it needs to be processed only once*/
       bool = false;
       
-      /*------- Etape 2: On choisit un artiste au hasard dans le tableau---------*/
-      cpt = resultat.length; //taille
-      let chiffreRand = Math.floor(Math.random() * cpt); //nbre Random entre 0 et taille
-      //On rentre les infos de la musique
-      nomArtiste = resultat[chiffreRand]['artists'][0]['name'];
-      cover = resultat[chiffreRand]['album']['images'][1]['url'];
-      preview = resultat[chiffreRand]['preview_url'];
-      nomTrack = resultat[chiffreRand]['name'];
-      nomAlbum = resultat[chiffreRand]['album']['name'];
-      //Pour le genre on a besoin de partir de l'artiste
-      const artiste = await axios.get(`https://api.spotify.com/v1/search?q=${nomArtiste}&type=artist`, {
+      /*------- Step 2: Choose a random artist from the array ---------*/
+      count = result.length; //size
+      let randomNumber = Math.floor(Math.random() * count); //random number between 0 and size
+      //Enter the music information
+      artistName = result[randomNumber]['artists'][0]['name'];
+      cover = result[randomNumber]['album']['images'][1]['url'];
+      preview = result[randomNumber]['preview_url'];
+      trackName = result[randomNumber]['name'];
+      albumName = result[randomNumber]['album']['name'];
+      //For the genre, we need to start from the artist
+      const artist = await axios.get(`https://api.spotify.com/v1/search?q=${artistName}&type=artist`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
       });
-      genres = artiste['data']['artists']['items'][0]['genres'];
-      //On envoie tous ces infos sur l'index.ejs
-      res.render('index', {nomArtiste, cover, preview, nomTrack, nomAlbum, genres});
+      genres = artist['data']['artists']['items'][0]['genres'];
+      //Send all this information to index.ejs
+      res.render('index', {artistName, cover, preview, trackName, albumName, genres});
       boolResults = true;
 
-      /*--------- Etape 3: verification des resultat de la saisie de l'utilisateur ---------*/
+      /*--------- Step 3: Check the user's input results ---------*/
       app.post('/checkAnswers', (req, res) => {
 
         if(boolResults) {
@@ -166,23 +166,23 @@ app.get('/', async (req, res) => {
           boolResults = false;
         }
 
-        const nomTrackL = req.body.nomTrack;
-        const nomArtisteL = req.body.nomArtiste;
+        const trackNameL = req.body.trackName;
+        const artistNameL = req.body.artistName;
         const genresL = req.body.genres;
-        const nomTrackS= req.body.nomTrackSys;
-        const nomArtisteS = req.body.nomArtisteSys;
-        const genreChaine = req.body.genreSys;
+        const trackNameS= req.body.trackNameSys;
+        const artistNameS = req.body.artistNameSys;
+        const genreString = req.body.genreSys;
         const coverS = req.body.coverSys;        
-        let genreTableau = genreChaine.split(',');
-        results.push({ artiste: nomArtisteL, color: nomArtisteL === nomArtisteS ? 'green' : 'red' });
-        results.push({ track: nomTrackL, color: nomTrackL.toLowerCase() === nomTrackS.toLowerCase() ? 'green' : 'red' });
-        results.push({ genre: genresL, color: genreTableau.includes(genresL) ? 'green' : 'red' });
-        res.render('index', { results, nomArtiste, cover, preview, nomTrack,nomAlbum, genres, nomTrackS, nomArtisteS, genreChaine, coverS});
+        let genreArray = genreString.split(',');
+        results.push({ artist: artistNameL, color: artistNameL === artistNameS ? 'green' : 'red' });
+        results.push({ track: trackNameL, color: trackNameL.toLowerCase() === trackNameS.toLowerCase() ? 'green' : 'red' });
+        results.push({ genre: genresL, color: genreArray.includes(genresL) ? 'green' : 'red' });
+        res.render('index', { results, artistName, cover, preview, trackName, albumName, genres, trackNameS, artistNameS, genreString, coverS});
 
       });
     })
     .catch(error => {
-      console.error('Une erreur s\'est produite lors de la récupération des informations de la playlist:', error);
+      console.error('An error occurred while retrieving playlist information:', error);
     });
 
     
@@ -193,12 +193,12 @@ app.get('/', async (req, res) => {
 
 
 
-/*------------ Ensemble des fonctions pour avoir les suggestions -----------*/
-/*Artistes*/
-app.get('/searchArtiste', async (req, res) => {
+/*------------ Set of functions to get suggestions -----------*/
+/*Artists*/
+app.get('/searchArtist', async (req, res) => {
     const query = req.query.q;
     if (!query) {
-      return res.status(400).send({ error: 'Aucun terme de recherche n\'a été fourni' });
+      return res.status(400).send({ error: 'No search term provided' });
     }
     const response = await axios.get(`https://api.spotify.com/v1/search?q=${query}&type=artist`, {
       headers: {
@@ -208,11 +208,11 @@ app.get('/searchArtiste', async (req, res) => {
     res.send(response.data.artists.items);
   });
 
-/*Morceaux*/
+/*Tracks*/
 app.get('/searchTracks', async (req, res) => {
   const query = req.query.q;
   if (!query) {
-      return res.status(400).send({ error: 'Aucun terme de recherche n\'a été fourni' });
+      return res.status(400).send({ error: 'No search term provided' });
   }
   const response = await axios.get(`https://api.spotify.com/v1/search?q=${query}&type=track`, {
     headers: {
@@ -226,7 +226,7 @@ app.get('/searchTracks', async (req, res) => {
 /*Genre*/
 app.get('/searchGenre', async (req, res) => {
   const query = req.query.q;
-  //On utilise pas l'api spotify cette fois mais le fichier genre.json qui contient tous les genre dispo sur spotify
+  //This time we don't use the Spotify API, but the genre.json file which contains all the genres available on Spotify
   fs.readFile('genre.json', 'utf8', (err, data) => {
     if (err) {
       console.error(err);
@@ -245,7 +245,7 @@ app.get('/searchGenre', async (req, res) => {
   });
 });
 
-/*Fontion pour extraire la partie qui nous interesse dans l'url */
+/*Function to extract the relevant part from the URL*/
 function extractPlaylistIdFromLink(link) {
   const regex = /^https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)\?.*$/;
   const match = link.match(regex);
@@ -258,27 +258,27 @@ function extractPlaylistIdFromLink(link) {
 }
 
 
-/*Pour changer la playlist*/
+/*To change the playlist*/
 app.post('/changePlaylist', async (req, res) => {
   const newPlaylistId = req.body.playlistId;
 
-  // Vérification de la validité du lien de playlist
+  // Check the validity of the playlist link
   if (!newPlaylistId) {
-    return res.status(400).send({ error: 'lien de playlist invalide' });
+    return res.status(400).send({ error: 'Invalid playlist link' });
   }
 
-  // Mise à jour de l'ID de la playlist
+  // Update the playlist ID
   playlistId = extractPlaylistIdFromLink(newPlaylistId);
-  /*On reset les variables*/
-  nombreMorceaux = 0;
-  resultat = [];
+  /*Reset variables*/
+  numberOfTracks = 0;
+  result = [];
   bool = true;
-  /*On renvoie vers la page principal avec la nouvelle playlist*/
+  /*Redirect to the main page with the new playlist*/
   res.redirect('/');
 
 });
 
-/* ------------- Enfin: On lance le serveur -----------*/
+/* ------------- Finally: Start the server -----------*/
 app.listen(3000, () => {
     console.log("Server started on port 3000");
 });
