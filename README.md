@@ -1,6 +1,6 @@
-# CoverGuess - Music Guessing Game
+# BeatTheCover - Music Guessing Game
 
-CoverGuess is a fun and interactive web-based game that challenges players to guess the title, artist, and genre of a song based on progressively revealed audio clips and album cover art.
+BeatTheCover is a fun and interactive web-based game that challenges players to guess the title, artist, and genre of a song based on progressively revealed audio clips and album cover art.
 
 ## Getting Started
 
@@ -53,3 +53,7 @@ Open your web browser and go to the following URL:
 ```txt
 http://localhost:3000/
 ```
+
+## Possible Issues
+
+There are some known issues with the Spotify API when performing searches that may affect the accuracy of genre information and suggestions.

@@ -1,18 +1,3 @@
-/**
- * TODO:
- * []: Rajouter le fait de pouvoir voir les feat
- * [x]: Rajouter l'accesToken automatique
- * [~]: Rajouter des commentaires
- * [x]: Rajouter le fait d'avoir des suggestions 
- * [x]: Rajouter boolean avant
- * [x]: Ne pas prendre en compte les majuscules et minuscules quand on test ?
- * []: clean le code par pitié
- * []: Finir de rajouter l'album
- * []: Rajouter un truc pour vider le tableau
- * ...
- * 
-*/
-
 /* Import des bibliothèques nécessaires */
 const express = require('express');
 const axios = require('axios');
@@ -89,11 +74,8 @@ let genres;
 let boolResults = true;
 let results = [];
 
-  
-
 app.get('/', async (req, res) => {
   try{
-    console.log(accessToken);
     /*---------- Etape 1: On charge l'ensemble des morceaux de la playlist dans un tableau ---------*/
     /*Dans un premier temps on enregistre le nombre de morceaux de la playlist*/
     axios.get(`https://api.spotify.com/v1/playlists/${playlistId}`, {
@@ -124,7 +106,6 @@ app.get('/', async (req, res) => {
           });
           //On stock le resultat
           const playlist = response.data;
-          //console.log(response.data.items.length);
           /*Dans notre cas on s'interesse uniquement au morceaux avec une preview hors tous les morceaux spotify n'ont pas cette preview
           Pour cela on parcours tous les morceaux et s'il ont une preview alors on stock le morceaux dans resultat*/
           for (let i = 0; i < 100; i++) {
@@ -146,10 +127,8 @@ app.get('/', async (req, res) => {
             - On verifie qu'il reste moins de 100 morceaux
             - Et on rajoute sur le nombre de morceaux traités le reste (le mod de 100 du coup)*/
           if (((totalTracksTemp / 100)-1 < 1) && ((totalTracksTemp / 100)-1 > 0)) {
-            console.log("cas 1");
             nombreMorceaux += totalTracks % 100;
           } else {
-            console.log("cas 2");
             nombreMorceaux += 100;
             totalTracksTemp -= 100;
           }
@@ -168,8 +147,6 @@ app.get('/', async (req, res) => {
       preview = resultat[chiffreRand]['preview_url'];
       nomTrack = resultat[chiffreRand]['name'];
       nomAlbum = resultat[chiffreRand]['album']['name'];
-      //console.log("nom Album: "+nomAlbum);
-
       //Pour le genre on a besoin de partir de l'artiste
       const artiste = await axios.get(`https://api.spotify.com/v1/search?q=${nomArtiste}&type=artist`, {
         headers: {
@@ -179,20 +156,15 @@ app.get('/', async (req, res) => {
       genres = artiste['data']['artists']['items'][0]['genres'];
       //On envoie tous ces infos sur l'index.ejs
       res.render('index', {nomArtiste, cover, preview, nomTrack, nomAlbum, genres});
-
+      boolResults = true;
 
       /*--------- Etape 3: verification des resultat de la saisie de l'utilisateur ---------*/
       app.post('/checkAnswers', (req, res) => {
-        
 
         if(boolResults) {
           results = [];
           boolResults = false;
-
         }
-        console.log("nom artiste "+nomArtiste);
-        console.log("nom track "+nomTrack);
-        console.log("nom cover "+cover);
 
         const nomTrackL = req.body.nomTrack;
         const nomArtisteL = req.body.nomArtiste;
@@ -200,15 +172,11 @@ app.get('/', async (req, res) => {
         const nomTrackS= req.body.nomTrackSys;
         const nomArtisteS = req.body.nomArtisteSys;
         const genreChaine = req.body.genreSys;
-        const coverS = req.body.coverSys;
-        console.log(coverS);
-        
+        const coverS = req.body.coverSys;        
         let genreTableau = genreChaine.split(',');
         results.push({ artiste: nomArtisteL, color: nomArtisteL === nomArtisteS ? 'green' : 'red' });
         results.push({ track: nomTrackL, color: nomTrackL.toLowerCase() === nomTrackS.toLowerCase() ? 'green' : 'red' });
         results.push({ genre: genresL, color: genreTableau.includes(genresL) ? 'green' : 'red' });
-        
-        console.log(results);
         res.render('index', { results, nomArtiste, cover, preview, nomTrack,nomAlbum, genres, nomTrackS, nomArtisteS, genreChaine, coverS});
 
       });
@@ -300,7 +268,6 @@ app.post('/changePlaylist', async (req, res) => {
   }
 
   // Mise à jour de l'ID de la playlist
-  console.log( extractPlaylistIdFromLink(newPlaylistId));
   playlistId = extractPlaylistIdFromLink(newPlaylistId);
   /*On reset les variables*/
   nombreMorceaux = 0;

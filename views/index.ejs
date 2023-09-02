@@ -1,9 +1,4 @@
-<!--TODO: 
-  [~]Rajouter le fait que le resultat sont dans des tableau
-  [x]Rajouter ajax pour les sujestions dans les inputs
--->
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
   <html>
     <head>
       <title>🐕</title>
@@ -13,7 +8,7 @@
     </head>
     <body>
       <h1>Devine la musique en gros</h1>
-      <form action="/changePlaylist" method="post">
+      <form action="/changePlaylist" method="post" onsubmit="resetCpt();">
         <input type="text" name="playlistId" placeholder="Lien playlist spotify">
         <button type="submit">Changer la playlist</button>
       </form>
@@ -61,7 +56,6 @@
         </ul>
       </details>
      
-      <!--TODO: Rajouter un truc pour vider le tableau-->
       <form action="/checkAnswers" method="post">
         <input type="hidden" name="nomTrackSys" value="<%= nomTrack %>">
         <input type="hidden" name="nomArtisteSys" value="<%= nomArtiste %>">

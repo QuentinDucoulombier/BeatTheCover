@@ -23,7 +23,6 @@ function incrementeCpt() {
   console.log(cpt);
   localStorage.setItem('cpt', cpt);
   if(cpt > 5) {
-    //TODO: regarder pouquoi cette merde ne marche pas
     gameOver();
   }
 }
@@ -40,7 +39,6 @@ async function congratulation() {
 }
 
 
-//TODO: debug cette merde
 async function gameOver() {
   return new Promise((resolve) => {
     Swal.fire({
@@ -59,5 +57,4 @@ async function gameOver() {
   });
 }
 
-//window.addEventListener('beforeunload', reset);
           
