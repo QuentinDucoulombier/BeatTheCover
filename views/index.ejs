@@ -1,0 +1,158 @@
+<!--TODO: 
+  [~]Rajouter le fait que le resultat sont dans des tableau
+  [x]Rajouter ajax pour les sujestions dans les inputs
+-->
+
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>🐕</title>
+      <link rel="stylesheet" type="text/css" href="/css/projet.css"/>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="/js/scriptHead.js"></script>
+    </head>
+    <body>
+      <h1>Devine la musique en gros</h1>
+      <form action="/changePlaylist" method="post">
+        <input type="text" name="playlistId" placeholder="Lien playlist spotify">
+        <button type="submit">Changer la playlist</button>
+      </form>
+      
+      <% if (typeof nomArtisteS == 'undefined') { %>
+        
+      <details>
+        <summary>Nom artiste</summary>
+        <%= nomArtiste %>
+      </details>
+      <% } else { %>
+        <details>
+          <summary>Nom artiste</summary>
+          <%= nomArtisteS %>
+        </details>
+      <% } %>
+      
+      <% if (typeof coverS == 'undefined') { %>
+      <img src="<%= cover %>" alt="cover">
+      <% } else { %>
+      <img src="<%= coverS %>" alt="cover">
+      <% } %>
+      <p>
+      <audio controls id="myAudio">
+        <source src="<%= preview %>" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+      </p>
+      <details>
+        <summary>Nom morceau</summary>
+        <%= nomTrack %>
+      </details>
+      <details>
+        <summary>Nom album</summary>
+        <%= nomAlbum %>
+      </details>
+      <details>
+        <summary>Genre</summary>
+        <ul>
+          <% genres.forEach(function(genres) { %>
+              <li>
+                  <%=genres%>
+              </li>
+          <% }); %>
+        </ul>
+      </details>
+     
+      <!--TODO: Rajouter un truc pour vider le tableau-->
+      <form action="/checkAnswers" method="post">
+        <input type="hidden" name="nomTrackSys" value="<%= nomTrack %>">
+        <input type="hidden" name="nomArtisteSys" value="<%= nomArtiste %>">
+        <input type="hidden" name="genreSys" value="<%= genres %>">
+        <input type="hidden" name="coverSys" value="<%= cover %>">
+      
+        <% if (typeof results == 'undefined' || results.length == 0) { %>
+          <input type="text" id="track-search" name="nomTrack" placeholder="Nom de la musique">
+          <input type="text" id="artist-search" name="nomArtiste" placeholder="Nom de l'artiste"/>
+          <input type="text" id="genre-search" name="genres" placeholder="Genres musicaux"/>
+        <% } else { %>
+          <% let max = results.length %>
+          <!--Poser aucune question sur le nom de la variable-->
+          <% let maxMinus1 = max - 2 %>
+          <% let maxMinus2 = max - 3 %>
+          <% let maxMinus3 = max - 1 %>
+          <% if (results[maxMinus1]['color'] == 'green' && results[maxMinus2]['color'] == 'green' && results[maxMinus3]['color'] != 'green') { %>
+            <input type="text" id="track-search" name="nomTrack" value="<%= results[maxMinus1]['track'] %>" placeholder="Nom de la musique">
+            <input type="text" id="artist-search" name="nomArtiste" value="<%= results[maxMinus2]['artiste'] %>" placeholder="Nom de l'artiste"/>
+            <input type="text" id="genre-search" name="genres" placeholder="Genres musicaux"/>
+          <% } else if (results[maxMinus1]['color'] == 'green' && results[maxMinus2]['color'] != 'green' && results[maxMinus3]['color'] == 'green') { %>
+            <input type="text" id="track-search" name="nomTrack" value="<%= results[maxMinus1]['track'] %>" placeholder="Nom de la musique">
+            <input type="text" id="artist-search" name="nomArtiste" placeholder="Nom de l'artiste"/>
+            <input type="text" id="genre-search" name="genres" value="<%= results[maxMinus3]['genre'] %>" placeholder="Genres musicaux"/>
+          <% } else if (results[maxMinus1]['color'] != 'green' && results[maxMinus2]['color'] == 'green' && results[maxMinus3]['color'] == 'green') { %>
+            <input type="text" id="track-search" name="nomTrack" placeholder="Nom de la musique">
+            <input type="text" id="artist-search" name="nomArtiste" value="<%= results[maxMinus2]['artiste'] %>" placeholder="Nom de l'artiste"/>
+            <input type="text" id="genre-search" name="genres" value="<%= results[maxMinus3]['genre'] %>" placeholder="Genres musicaux"/>
+          <% } else if (results[maxMinus1]['color'] == 'green' && results[maxMinus2]['color'] == 'green' && results[maxMinus3]['color'] == 'green') { %>
+            <input type="text" id="track-search" name="nomTrack" value="<%= results[maxMinus1]['track'] %>" placeholder="Nom de la musique">
+            <input type="text" id="artist-search" name="nomArtiste" value="<%= results[maxMinus2]['artiste'] %>" placeholder="Nom de l'artiste"/>
+            <input type="text" id="genre-search" name="genres" value="<%= results[maxMinus3]['genre'] %>" placeholder="Genres musicaux"/>
+            <script>congratulation();</script>
+          <% } else if (results[maxMinus1]['color'] == 'green' && results[maxMinus2]['color'] != 'green' && results[maxMinus3]['color'] != 'green') { %>
+            <input type="text" id="track-search" name="nomTrack" value="<%= results[maxMinus1]['track'] %>" placeholder="Nom de la musique">
+            <input type="text" id="artist-search" name="nomArtiste" placeholder="Nom de l'artiste"/>
+            <input type="text" id="genre-search" name="genres" placeholder="Genres musicaux"/>
+          <% } else if (results[maxMinus1]['color'] != 'green' && results[maxMinus2]['color'] == 'green' && results[maxMinus3]['color'] != 'green') { %>
+            <input type="text" id="track-search" name="nomTrack" placeholder="Nom de la musique">
+            <input type="text" id="artist-search" name="nomArtiste" value="<%= results[maxMinus2]['artiste'] %>" placeholder="Nom de l'artiste"/>
+            <input type="text" id="genre-search" name="genres" placeholder="Genres musicaux"/>
+          <% } else if (results[maxMinus1]['color'] != 'green' && results[maxMinus2]['color'] != 'green' && results[maxMinus3]['color'] == 'green') { %>
+            <input type="text" id="track-search" name="nomTrack" placeholder="Nom de la musique">
+            <input type="text" id="artist-search" name="nomArtiste" placeholder="Nom de l'artiste"/>
+            <input type="text" id="genre-search" name="genres" value="<%= results[maxMinus3]['genre'] %>" placeholder="Genres musicaux"/>
+          <% } else { %>
+            <input type="text" id="track-search" name="nomTrack" placeholder="Nom de la musique">
+            <input type="text" id="artist-search" name="nomArtiste" placeholder="Nom de l'artiste"/>
+            <input type="text" id="genre-search" name="genres" placeholder="Genres musicaux"/>
+          <% } %>
+        <% } %>
+      
+        <button type="submit" onclick="incrementeCpt()">Verifier</button>
+      </form>
+      
+    
+      
+      
+      <div id="suggestions">
+      </div>
+  
+      <script src="/js/scriptTail.js"></script>
+
+      <% if (!(typeof results == 'undefined' || results.length == 0)) { %>
+
+        
+
+        <div id="aswers-table" class='table-wrapper'>
+          <table class='fl-table'>
+            <thead>
+              <tr>
+                <th>Nom du morceau</th>
+                <th>Nom de l'artiste</th>
+                <th>Genre</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for (let index = 0; index < results.length; index+=3) { %>
+                <tr>
+                  <td style="background-color: <%= results[index+1]['color'] %>"><%= results[index+1]['track'] %></td>
+                  <td style="background-color: <%= results[index]['color'] %>"><%= results[index]['artiste'] %></td>
+                  <td style="background-color: <%= results[index+2]['color'] %>"><%= results[index+2]['genre'] %></td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+
+      <p></p>
+      <a href="." onclick="resetCpt()">Nouvelle musique </a>
+
+  </body>
+</html>
