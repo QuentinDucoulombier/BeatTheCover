@@ -27,7 +27,7 @@ Install the project dependencies using npm:
 npm install
 ```
 
-Create a config.json file in the project root directory with the following format:
+Create a `config.json` file in the project root directory with the following format:
 
 ```json
 {
