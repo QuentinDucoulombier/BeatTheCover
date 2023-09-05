@@ -70,7 +70,7 @@ let albumName;
 let cover;
 let trackName;
 let preview;
-let genres;
+let genres = [];
 let boolResults = true;
 let results = [];
 
@@ -154,7 +154,26 @@ app.get('/', async (req, res) => {
           'Authorization': `Bearer ${accessToken}`
         }
       });
-      genres = artist['data']['artists']['items'][0]['genres'];
+      console.log("artist "+ artistName + " genreArtiste "+ artist['data']['artists']['items'][0]['name']);
+      if(artistName === artist['data']['artists']['items'][0]['name'])
+      {
+        genres = artist['data']['artists']['items'][0]['genres'];
+      }
+      else 
+      {
+        const artist = await axios.get(`https://api.spotify.com/v1/search?q=${artistName}&type=artist&limit=10`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        });
+        for (let i = 1; i < 9; i++) {
+          if((artistName === artist['data']['artists']['items'][i]['name']) && (artist['data']['artists']['items'][i]['genres'].length > 0))
+          {
+            genres = artist['data']['artists']['items'][i]['genres'];
+            break;
+          }
+        }
+      }
       //Send all this information to index.ejs
       res.render('index', {artistName, cover, preview, trackName, albumName, genres});
       boolResults = true;
