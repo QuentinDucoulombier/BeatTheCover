@@ -57,3 +57,4 @@ http://localhost:3000/
 ## Possible Issues
 
 There are some known issues with the Spotify API when performing searches that may affect the accuracy of genre information and suggestions.
+[Problem report here](https://community.spotify.com/t5/Spotify-for-Developers/Search-doesn-t-work-anymore-on-API/td-p/5630951)

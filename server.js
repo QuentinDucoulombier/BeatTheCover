@@ -76,6 +76,7 @@ let results = [];
 
 app.get('/', async (req, res) => {
   try{
+    console.log(accessToken);
     /*---------- Step 1: Load all the tracks from the playlist into an array ---------*/
     /*First, record the number of tracks in the playlist*/
     axios.get(`https://api.spotify.com/v1/playlists/${playlistId}`, {
@@ -148,7 +149,7 @@ app.get('/', async (req, res) => {
       trackName = result[randomNumber]['name'];
       albumName = result[randomNumber]['album']['name'];
       //For the genre, we need to start from the artist
-      const artist = await axios.get(`https://api.spotify.com/v1/search?q=${artistName}&type=artist`, {
+      const artist = await axios.get(`https://api.spotify.com/v1/search?q=${artistName}&type=artist&limit=1`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
