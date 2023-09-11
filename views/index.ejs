@@ -56,11 +56,7 @@
   </details>
  
   <form action="/checkAnswers" method="post">
-    <input type="hidden" name="trackNameSys" value="<%= trackName %>">
-    <input type="hidden" name="artistNameSys" value="<%= artistName %>">
-    <input type="hidden" name="genreSys" value="<%= genres %>">
-    <input type="hidden" name="coverSys" value="<%= cover %>">
-  
+      
     <% if (typeof results === 'undefined' || results.length === 0) { %>
       <input type="text" id="track-search" name="trackName" placeholder="Nom de la musique">
       <input type="text" id="artist-search" name="artistName" placeholder="Nom de l'artiste"/>

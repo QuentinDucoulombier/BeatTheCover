@@ -154,7 +154,6 @@ app.get('/', async (req, res) => {
           'Authorization': `Bearer ${accessToken}`
         }
       });
-      console.log("artist "+ artistName + " genreArtiste "+ artist['data']['artists']['items'][0]['name']);
       if(artistName === artist['data']['artists']['items'][0]['name'])
       {
         genres = artist['data']['artists']['items'][0]['genres'];
@@ -185,19 +184,13 @@ app.get('/', async (req, res) => {
           results = [];
           boolResults = false;
         }
-
         const trackNameL = req.body.trackName;
         const artistNameL = req.body.artistName;
         const genresL = req.body.genres;
-        const trackNameS= req.body.trackNameSys;
-        const artistNameS = req.body.artistNameSys;
-        const genreString = req.body.genreSys;
-        const coverS = req.body.coverSys;        
-        let genreArray = genreString.split(',');
-        results.push({ artist: artistNameL, color: artistNameL === artistNameS ? 'green' : 'red' });
-        results.push({ track: trackNameL, color: trackNameL.toLowerCase() === trackNameS.toLowerCase() ? 'green' : 'red' });
-        results.push({ genre: genresL, color: genreArray.includes(genresL) ? 'green' : 'red' });
-        res.render('index', { results, artistName, cover, preview, trackName, albumName, genres, trackNameS, artistNameS, genreString, coverS});
+        results.push({ artist: artistNameL, color: artistNameL.toLowerCase() === artistName.toLowerCase() ? 'green' : 'red' });
+        results.push({ track: trackNameL, color: trackNameL.toLowerCase() === trackName.toLowerCase() ? 'green' : 'red' });
+        results.push({ genre: genresL, color: genres.includes(genresL) ? 'green' : 'red' });
+        res.render('index', { results, artistName, cover, preview, trackName, albumName, genres});
 
       });
     })
